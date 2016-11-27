@@ -17,10 +17,10 @@ class RegisterForm(forms.Form):
     email = forms.CharField(label='Email', widget=forms.EmailInput, required=True)
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput, required=True)
     password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput, required=True)    
-
     firstname = forms.CharField(label="First name", widget=forms.TextInput, required=False)
-    lastname = forms.CharField(label="Last name", widget=forms.TextInput, required=False)               
-
+    lastname = forms.CharField(label="Last name", widget=forms.TextInput, required=False)
+    attributes = (('student', 'student',),('teacher','teacher',), ('engineer','engineer',))               
+    userType = forms.ChoiceField(widget=forms.RadioSelect, choices=attributes)
     def clean_password2(self):
         # Check that the two password entries match
         password1 = self.cleaned_data.get("password1")
