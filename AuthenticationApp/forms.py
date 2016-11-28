@@ -20,7 +20,7 @@ class RegisterForm(forms.Form):
     firstname = forms.CharField(label="First name", widget=forms.TextInput, required=False)
     lastname = forms.CharField(label="Last name", widget=forms.TextInput, required=False)
     attributes = (('student', 'student',),('teacher','teacher',), ('engineer','engineer',))               
-    userType = forms.ChoiceField(widget=forms.RadioSelect, choices=attributes)
+    usertype = forms.ChoiceField(widget=forms.RadioSelect, choices=attributes)
     def clean_password2(self):
         # Check that the two password entries match
         password1 = self.cleaned_data.get("password1")
@@ -46,14 +46,12 @@ class UpdateForm(forms.ModelForm):
     password hash display field.
     """
     password = ReadOnlyPasswordHashField()
-
     class Meta:
         model = MyUser        
-        fields = ('email', 'password', 'first_name', 'last_name')
+        fields = ('email', 'password', 'first_name', 'last_name', 'user_type')
 
     def clean_password(self):            
         return self.initial["password"]        
-
     def clean_email(self):
         email = self.cleaned_data.get("email")
         #Check is email has changed
@@ -75,7 +73,7 @@ class UpdateForm(forms.ModelForm):
             email = self.cleaned_data.get("email")                               
             return email[:email.find("@")]      
         return first_name
-   
+
 
 
 """Admin Forms"""
@@ -88,7 +86,7 @@ class AdminUserCreationForm(forms.ModelForm):
 
     class Meta:
         model = MyUser
-        fields = ('email', 'first_name', 'last_name')        
+        fields = ('email', 'first_name', 'last_name', 'user_type')        
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -116,8 +114,8 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model = MyUser
-        #fields = ('email', 'password', 'first_name', 'last_name', 'is_active', 'is_admin')
-        fields = ('email', 'password', 'first_name', 'last_name', 'is_active', 'is_admin')
+        #fields = ('email', 'password', 'first_name', 'last_name', 'user_type', 'is_active', 'is_admin')
+        fields = ('email', 'password', 'first_name', 'last_name','user_type', 'is_active', 'is_admin')
 
     def clean_password(self):
         # Regardless of what the user provides, return the initial value.

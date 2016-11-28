@@ -10,7 +10,7 @@ from django.db.models.signals import post_save
 
 # Create your models here.
 class MyUserManager(BaseUserManager):
-    def create_user(self, email=None, password=None, first_name=None, last_name=None, userType):
+    def create_user(self, email=None, password=None, first_name=None, last_name=None, user_type=None):
         if not email:
             raise ValueError('Users must have an email address')
 
@@ -22,31 +22,31 @@ class MyUserManager(BaseUserManager):
         #If first_name is not present, set it as email's username by default
         if first_name is None or first_name == "" or first_name == '':                                
             user.first_name = email[:email.find("@")]            
-        if userType == "student":
-		user.is_student = TRUE
-	elif userType == "teacher":
-		user.is_teacher = TRUE
-	elif userType == "engineer" :
-		user.is_engineer = TRUE
+        if user_type == "student":
+		user.is_student = True
+	elif user_type == "teacher":
+		user.is_teacher = True
+	elif user_type == "engineer" :
+		user.is_engineer = True
 	else:
 		user.is_admin = TRUE
         user.save(using=self._db)
         return user
 
     def create_superuser(self, email=None, password=None, first_name=None, last_name=None):
-        user = self.create_user(email, password=password, first_name=first_name, last_name=last_name, userType="")
+        user = self.create_user(email, password=password, first_name=first_name, last_name=last_name, usertype="")
         user.is_admin = True
         user.save(using=self._db)
         return user
     
     def create_student(self, email=None, password=None, first_name=None, last_name=None):
-	return self.create_user(email, password=password, first_name=first_name, last_name=last_name, userType="student")
+	return self.create_user(email, password=password, first_name=first_name, last_name=last_name, usertype="student")
 
     def create_teacher(self, email=None, password=None, first_name=None, last_name=None):
-	return self.create_user(email, password=password, first_name=first_name, last_name=last_name, userType="teacher")
+	return self.create_user(email, password=password, first_name=first_name, last_name=last_name, usertype="teacher")
 
     def create_engineer(self, email=None, password=None, first_name=None, last_name=None):
-	return self.create_user(email, password=password, first_name=first_name, last_name=last_name, userType="engineer")
+	return self.create_user(email, password=password, first_name=first_name, last_name=last_name, usertype="engineer")
 class MyUser(AbstractBaseUser):
     email = models.EmailField(
         verbose_name='email address',
@@ -66,13 +66,18 @@ class MyUser(AbstractBaseUser):
     	blank=True,
     	)
 
+    user_type = models.CharField(
+	max_length=120,
+	null=True,
+	blank=True,
+	)
     is_active = models.BooleanField(default=True,)
     is_admin = models.BooleanField(default=False,)
 
     # #New fields added
-     is_student = models.BooleanField(default=False,)
-     is_professor = models.BooleanField(default=False,)
-     is_engineer = models.BooleanField(default=False,)    
+    is_student = models.BooleanField(default=False,)
+    is_professor = models.BooleanField(default=False,)
+    is_engineer = models.BooleanField(default=False,)    
 
     objects = MyUserManager()
 
@@ -138,6 +143,35 @@ class Student(models.Model):
         return False
 
 class Teacher(models.Model):
+    user = models.OneToOneField(
+        MyUser,
+        on_delete=models.CASCADE,
+        primary_key=True)
+
+    def get_full_name(self):        
+        return "%s %s" %(self.user.first_name, self.user.last_name)
+
+    def get_short_name(self):        
+        return self.user.first_name
+
+    def __str__(self):              #Python 3
+        return self.user.email
+
+    def __unicode__(self):           # Python 2
+        return self.user.email
+
+    def has_perm(self, perm, obj=None):
+        return True
+
+    def has_module_perms(self, app_label):        
+        return True
+
+
+    @property
+    def is_staff(self):
+        return False
+
+class Engineer(models.Model):
     user = models.OneToOneField(
         MyUser,
         on_delete=models.CASCADE,
