@@ -23,11 +23,11 @@ class MyUserManager(BaseUserManager):
         if first_name is None or first_name == "" or first_name == '':                                
             user.first_name = email[:email.find("@")]            
         if user_type == "student":
-		user.is_student = True
-	elif user_type == "teacher":
-		user.is_teacher = True
-	elif user_type == "engineer" :
-		user.is_engineer = True
+            user.is_student = True
+        elif user_type == "teacher":
+            user.is_teacher = True
+        elif user_type == "engineer" :
+            user.is_engineer = True
 	else:
 		user.is_admin = TRUE
         user.save(using=self._db)
@@ -71,13 +71,15 @@ class MyUser(AbstractBaseUser):
 	null=True,
 	blank=True,
 	)
+    
     is_active = models.BooleanField(default=True,)
     is_admin = models.BooleanField(default=False,)
 
     # #New fields added
     is_student = models.BooleanField(default=False,)
-    is_professor = models.BooleanField(default=False,)
+    is_teacher = models.BooleanField(default=False,)
     is_engineer = models.BooleanField(default=False,)    
+    in_uni = models.BooleanField(default=False,)
 
     objects = MyUserManager()
 
@@ -118,8 +120,8 @@ class Student(models.Model):
         MyUser,
         on_delete=models.CASCADE,
         primary_key=True)
-
-    def get_full_name(self):        
+        
+    def get_full_name(self):
         return "%s %s" %(self.user.first_name, self.user.last_name)
 
     def get_short_name(self):        
@@ -147,7 +149,12 @@ class Teacher(models.Model):
         MyUser,
         on_delete=models.CASCADE,
         primary_key=True)
-
+    
+    contact_info = models.CharField(
+	max_length=120,
+	null=True,
+	blank=True,
+	)
     def get_full_name(self):        
         return "%s %s" %(self.user.first_name, self.user.last_name)
 
@@ -176,7 +183,24 @@ class Engineer(models.Model):
         MyUser,
         on_delete=models.CASCADE,
         primary_key=True)
-
+    
+    contact_info = models.CharField(
+	max_length=120,
+	null=True,
+	blank=True,
+	)
+    alma_mater = models.CharField(
+	max_length=120,
+	null=True,
+	blank=True,
+	)
+    
+    about = models.CharField(
+	max_length=120,
+	null=True,
+	blank=True,
+	)
+    
     def get_full_name(self):        
         return "%s %s" %(self.user.first_name, self.user.last_name)
 
