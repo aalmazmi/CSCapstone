@@ -10,7 +10,7 @@ from django.db.models.signals import post_save
 
 # Create your models here.
 class MyUserManager(BaseUserManager):
-    def create_user(self, email=None, password=None, first_name=None, last_name=None, user_type=None):
+    def create_user(self, email=None, password=None, first_name=None, last_name=None):
         if not email:
             raise ValueError('Users must have an email address')
 
@@ -22,31 +22,17 @@ class MyUserManager(BaseUserManager):
         #If first_name is not present, set it as email's username by default
         if first_name is None or first_name == "" or first_name == '':                                
             user.first_name = email[:email.find("@")]            
-        if user_type == "student":
-            user.is_student = True
-        elif user_type == "teacher":
-            user.is_teacher = True
-        elif user_type == "engineer" :
-            user.is_engineer = True
-	else:
-		user.is_admin = TRUE
+       
+	
         user.save(using=self._db)
         return user
 
     def create_superuser(self, email=None, password=None, first_name=None, last_name=None):
-        user = self.create_user(email, password=password, first_name=first_name, last_name=last_name, usertype="")
+        user = self.create_user(email, password=password, first_name=first_name, last_name=last_name)
         user.is_admin = True
         user.save(using=self._db)
         return user
     
-    def create_student(self, email=None, password=None, first_name=None, last_name=None):
-	return self.create_user(email, password=password, first_name=first_name, last_name=last_name, usertype="student")
-
-    def create_teacher(self, email=None, password=None, first_name=None, last_name=None):
-	return self.create_user(email, password=password, first_name=first_name, last_name=last_name, usertype="teacher")
-
-    def create_engineer(self, email=None, password=None, first_name=None, last_name=None):
-	return self.create_user(email, password=password, first_name=first_name, last_name=last_name, usertype="engineer")
 class MyUser(AbstractBaseUser):
     email = models.EmailField(
         verbose_name='email address',
