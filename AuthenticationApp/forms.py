@@ -19,8 +19,7 @@ class RegisterForm(forms.Form):
     password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput, required=True)    
     firstname = forms.CharField(label="First name", widget=forms.TextInput, required=False)
     lastname = forms.CharField(label="Last name", widget=forms.TextInput, required=False)
-    attributes = (('student', 'student',),('teacher','teacher',), ('engineer','engineer',))               
-    usertype = forms.ChoiceField(widget=forms.RadioSelect, choices=attributes)
+    #usertype = forms.ChoiceField(widget=forms.RadioSelect, choices=attributes)
     def clean_password2(self):
         # Check that the two password entries match
         password1 = self.cleaned_data.get("password1")
@@ -70,7 +69,7 @@ class TeacherForm(forms.Form):
         except:
             raise forms.ValidationError("There was an error, please contact us later")
 
-class TeacherForm(forms.Form):
+class EngineerForm(forms.Form):
     """A form for updating users. Includes all the fields on
     the user, but replaces the password field with admin's
     password hash display field.

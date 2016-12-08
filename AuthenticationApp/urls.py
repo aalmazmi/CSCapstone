@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^logout$', views.auth_logout, name='Logout'),
     url(r'^register$', views.auth_register, name='Register'),
     url(r'^update$', views.update_profile, name='UpdateProfile'),
+    url(r'^registerstudent$', views.auth_register, name='RegisterStudent'),
    	url(r'^registerengineer$', views.register_engineer, name='RegisterEngineer'),
 	url(r'^registerteacher$', views.register_teacher, name='RegisterTeacher') 
       

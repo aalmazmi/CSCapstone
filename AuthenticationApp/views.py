@@ -10,7 +10,7 @@ from django.shortcuts import render
 from django.contrib import messages
 
 
-from .forms import LoginForm, RegisterForm, UpdateForm, TeacherForm
+from .forms import LoginForm, RegisterForm, UpdateForm, TeacherForm, EngineerForm
 from .models import MyUser, Student, Teacher, Engineer
 
 # Auth Views
@@ -50,15 +50,12 @@ def auth_register(request):
 	
 	form = RegisterForm(request.POST or None)
 	if form.is_valid():
-		if form.cleaned_data['usertype'] == "teacher":
-			new_user = MyUser.objects.create_user(email=form.cleaned_data['email'], 
-				password=form.cleaned_data["password2"], 
-				first_name=form.cleaned_data['firstname'], last_name=form.cleaned_data['lastname'])
-			new_user.save()	
-			new_teacher = Teacher(user = new_user)
-			new_teacher.save()
-			return HttpResponseRedirect("/registerteacher")
-		#Also registering students		
+		new_user = MyUser.objects.create_user(email=form.cleaned_data['email'], 
+			password=form.cleaned_data["password2"], 
+			first_name=form.cleaned_data['firstname'], last_name=form.cleaned_data['lastname'])
+		new_user.is_student = True
+		new_user.user_type = 'student'
+		new_user.save()			
 		#new_user = MyUser.objects.create_user(email=form.cleaned_data['email'], 
 		#	password=form.cleaned_data["password2"], 
 		#	first_name=form.cleaned_data['firstname'], last_name=form.cleaned_data['lastname'], user_type=form.cleaned_data['usertype'])
@@ -66,7 +63,7 @@ def auth_register(request):
 		new_student = Student(user = new_user)
 		new_student.save()
 		login(request, new_user);	
-		messages.success(request, 'Success! Your account was created.')
+		messages.success(request, 'Success! Your student account was created.')
 	
 		return render(request, 'index.html')
 
@@ -104,9 +101,12 @@ def register_teacher(request):
 		new_user = MyUser.objects.create_user(email=form.cleaned_data['email'], 
 			password=form.cleaned_data["password2"], 
 			first_name=form.cleaned_data['firstname'], last_name=form.cleaned_data['lastname'])
+		new_user.is_teacher = True
+		new_user.user_type = 'teacher'
 		new_user.save()	
 		new_teacher = Teacher(user = new_user)
 		new_teacher.contact_info = form.cleaned_data['contact_info']
+		new_teacher.university = 'null'
 		new_teacher.save()
 		login(request, new_user);	
 		messages.success(request, 'Success! Your teacher account was created.')
@@ -126,11 +126,13 @@ def register_engineer(request):
 	if request.user.is_authenticated():
 		return HttpResponseRedirect("/")
 	
-	form = TeacherForm(request.POST or None)
+	form = EngineerForm(request.POST or None)
 	if form.is_valid():
 		new_user = MyUser.objects.create_user(email=form.cleaned_data['email'], 
 			password=form.cleaned_data["password2"], 
 			first_name=form.cleaned_data['firstname'], last_name=form.cleaned_data['lastname'])
+		new_user.is_engineer = True
+		new_user.user_type = 'engineer'
 		new_user.save()	
 		new_engineer = Engineer(user = new_user)
 		new_engineer.contact_info = form.cleaned_data['contact_info']
@@ -138,7 +140,7 @@ def register_engineer(request):
 		new_engineer.about = form.cleaned_data['about']
 		new_engineer.save()
 		login(request, new_user);	
-		messages.success(request, 'Success! Your teacher account was created.')
+		messages.success(request, 'Success! Your Engineering account was created.')
 	
 		return render(request, 'index.html')
 

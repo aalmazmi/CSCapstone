@@ -89,7 +89,10 @@ class MyUser(AbstractBaseUser):
 
     def has_module_perms(self, app_label):        
         return True
-
+	
+	def get_type(self):
+		return self.user_type
+		
     @property
     def is_staff(self):
         return self.is_admin
@@ -106,7 +109,9 @@ class Student(models.Model):
         MyUser,
         on_delete=models.CASCADE,
         primary_key=True)
-        
+    experience =  models.IntegerField(default=0)
+    university = models.ForeignKey('UniversitiesApp.University', null=True, on_delete=models.CASCADE)
+   
     def get_full_name(self):
         return "%s %s" %(self.user.first_name, self.user.last_name)
 
@@ -141,11 +146,25 @@ class Teacher(models.Model):
 	null=True,
 	blank=True,
 	)
+    
+    university = models.CharField(
+	max_length=120,
+	null=True,
+	blank=True,
+	)	
+	
+	
     def get_full_name(self):        
         return "%s %s" %(self.user.first_name, self.user.last_name)
-
+	
+	def get_email(self):
+		return self.user.email
+    
     def get_short_name(self):        
         return self.user.first_name
+    
+    def get_university(self):
+    	return self.university
 
     def __str__(self):              #Python 3
         return self.user.email
@@ -175,6 +194,11 @@ class Engineer(models.Model):
 	null=True,
 	blank=True,
 	)
+    company = models.CharField(
+	max_length=120,
+	null=True,
+	blank=True,
+	)	
     alma_mater = models.CharField(
 	max_length=120,
 	null=True,
