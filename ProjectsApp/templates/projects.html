@@ -1,20 +1,18 @@
 {% extends "body.html" %}
 
 {% block content %}
-	
+	{% if is_bookmark%}
+	<h1>Bookmarks</h1>
+	{% endif %}
 	<!-- Content -->
 	<div class="container" role="main">
 		<div class="table-responsive">
 			<table class="table table-striped sortable">
-				<thead>
-					<tr>
-						<th>Project Name</th>
-					</tr>
-				</thead>
+				
 				<tbody>
 					{% for project in projects %}
 					<tr>
-						<td>{{ project.name }}</td>
+					 	<p><a href="/project?name={{project.name}}">{{ project.name }}</a> </p>
 					</tr>
 					{% endfor %}
 				</tbody>

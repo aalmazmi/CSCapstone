@@ -57,7 +57,7 @@ class MyUser(AbstractBaseUser):
 	null=True,
 	blank=True,
 	)
-    
+    bookmark = models.ManyToManyField('ProjectsApp.Project')
     is_active = models.BooleanField(default=True,)
     is_admin = models.BooleanField(default=False,)
 
@@ -110,8 +110,12 @@ class Student(models.Model):
         on_delete=models.CASCADE,
         primary_key=True)
     experience =  models.IntegerField(default=0)
-    university = models.ForeignKey('UniversitiesApp.University', null=True, on_delete=models.CASCADE)
-   
+    
+    university = models.CharField(
+	max_length=120,
+	null=True,
+	blank=True,
+	)	
     def get_full_name(self):
         return "%s %s" %(self.user.first_name, self.user.last_name)
 

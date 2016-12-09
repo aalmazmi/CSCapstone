@@ -52,7 +52,9 @@ def auth_register(request):
 	if form.is_valid():
 		new_user = MyUser.objects.create_user(email=form.cleaned_data['email'], 
 			password=form.cleaned_data["password2"], 
-			first_name=form.cleaned_data['firstname'], last_name=form.cleaned_data['lastname'])
+			first_name=form.cleaned_data["firstname"], last_name=form.cleaned_data["lastname"])
+		new_user.first_name = form.cleaned_data["firstname"]
+		new_user.last_name=form.cleaned_data["lastname"]
 		new_user.is_student = True
 		new_user.user_type = 'student'
 		new_user.save()			
@@ -61,6 +63,7 @@ def auth_register(request):
 		#	first_name=form.cleaned_data['firstname'], last_name=form.cleaned_data['lastname'], user_type=form.cleaned_data['usertype'])
 		#new_user.save()	
 		new_student = Student(user = new_user)
+		new_student.university = form.cleaned_data['university'].name
 		new_student.save()
 		login(request, new_user);	
 		messages.success(request, 'Success! Your student account was created.')
@@ -101,12 +104,14 @@ def register_teacher(request):
 		new_user = MyUser.objects.create_user(email=form.cleaned_data['email'], 
 			password=form.cleaned_data["password2"], 
 			first_name=form.cleaned_data['firstname'], last_name=form.cleaned_data['lastname'])
+		new_user.first_name = form.cleaned_data["firstname"]
+		new_user.last_name=form.cleaned_data["lastname"]
 		new_user.is_teacher = True
 		new_user.user_type = 'teacher'
 		new_user.save()	
 		new_teacher = Teacher(user = new_user)
 		new_teacher.contact_info = form.cleaned_data['contact_info']
-		new_teacher.university = 'null'
+		new_teacher.university = form.cleaned_data['university'].name
 		new_teacher.save()
 		login(request, new_user);	
 		messages.success(request, 'Success! Your teacher account was created.')
@@ -131,6 +136,8 @@ def register_engineer(request):
 		new_user = MyUser.objects.create_user(email=form.cleaned_data['email'], 
 			password=form.cleaned_data["password2"], 
 			first_name=form.cleaned_data['firstname'], last_name=form.cleaned_data['lastname'])
+		new_user.first_name = form.cleaned_data["firstname"]
+		new_user.last_name=form.cleaned_data["lastname"]
 		new_user.is_engineer = True
 		new_user.user_type = 'engineer'
 		new_user.save()	
@@ -138,6 +145,7 @@ def register_engineer(request):
 		new_engineer.contact_info = form.cleaned_data['contact_info']
 		new_engineer.alma_mater = form.cleaned_data['alma_mater']
 		new_engineer.about = form.cleaned_data['about']
+		new_engineer.company= form.cleaned_data['company'].name
 		new_engineer.save()
 		login(request, new_user);	
 		messages.success(request, 'Success! Your Engineering account was created.')

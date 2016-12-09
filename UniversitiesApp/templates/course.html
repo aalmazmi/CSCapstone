@@ -19,6 +19,28 @@
 			{% endif %}
 		</div>
     </div>
+   {% if courseTeacher %}
+    <div class="container" role="main">
+		<div class="table-responsive">
+			<table class="table table-striped sortable">
+				<thead>
+					<tr>
+						<th>Add new Students</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for item in students %}
+					<tr>
+						<td>{{ item.get_full_name }}
+						            			<a href="/university/course/addStudent?name={{ university.name }}&course={{ course.tag }}&student={{ item.email }}" class="btn btn-default">add this student</a> </td>
+
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+	{% endif %}
     <div class="container" role="main">
 		<div class="table-responsive">
 			<table class="table table-striped sortable">
@@ -30,7 +52,11 @@
 				<tbody>
 					{% for item in course.members.all %}
 					<tr>
-						<td>{{ item.get_full_name }}</td>
+						<td>{{ item.get_full_name }}
+						            {% if courseTeacher %}
+						            			<a href="/university/course/removeStudent?name={{ university.name }}&course={{ course.tag }}&student={{item.email}}" class="btn btn-default">remove this student</a> </td>
+
+{% endif %}
 					</tr>
 					{% endfor %}
 				</tbody>

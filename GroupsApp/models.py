@@ -10,5 +10,16 @@ class Group(models.Model):
     description = models.CharField(max_length=300)
     members = models.ManyToManyField(MyUser)
     project = models.ManyToManyField(Project,default=None, related_name='project_groups')
+    experience_required = models.IntegerField(null=True)
     def __str__(self):
         return self.name
+        
+    def __str__(self):              #Python 3
+        return self.name
+
+    def __unicode__(self):           # Python 2
+        return self.name
+
+    def has_perm(self, perm, obj=None):
+        return True
+        

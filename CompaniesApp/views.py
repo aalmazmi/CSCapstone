@@ -6,10 +6,12 @@ Created by Jacob Dunbar on 10/2/2016.
 from django.shortcuts import render
 
 from . import models
+from AuthenticationApp.models import Engineer
 from . import forms
 
 def getCompanies(request):
     if request.user.is_authenticated():
+    
         companies_list = models.Company.objects.all()
         context = {
             'companies' : companies_list,
@@ -20,6 +22,16 @@ def getCompanies(request):
 
 def getCompany(request):
     if request.user.is_authenticated():
+    
+    	if request.user.is_engineer == True:
+    		mon = Engineer.objects.get(user=request.user)
+    		if mon.company == request.GET.get('name'):
+    			teach = mon
+    			in_university = models.Company.objects.get(name__exact=request.GET.get('name'))
+    			in_university.members.add(request.user)
+    			in_university.save()
+    			request.user.company_set.add(in_university)
+    			request.user.save()
         in_name = request.GET.get('name', 'None')
         in_company = models.Company.objects.get(name__exact=in_name)
         is_member = in_company.members.filter(email__exact=request.user.email)

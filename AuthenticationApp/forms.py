@@ -5,6 +5,8 @@ Created by Naman Patwari on 10/4/2016.
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django import forms
 from .models import MyUser, Teacher
+from UniversitiesApp.models import University
+from CompaniesApp.models import Company
 
 class LoginForm(forms.Form):
     email = forms.CharField(label='Email')
@@ -19,6 +21,8 @@ class RegisterForm(forms.Form):
     password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput, required=True)    
     firstname = forms.CharField(label="First name", widget=forms.TextInput, required=False)
     lastname = forms.CharField(label="Last name", widget=forms.TextInput, required=False)
+    university = forms.ModelChoiceField(queryset=University.objects.all().order_by('name'))
+
     #usertype = forms.ChoiceField(widget=forms.RadioSelect, choices=attributes)
     def clean_password2(self):
         # Check that the two password entries match
@@ -50,6 +54,8 @@ class TeacherForm(forms.Form):
     firstname = forms.CharField(label="First name", widget=forms.TextInput, required=False)
     lastname = forms.CharField(label="Last name", widget=forms.TextInput, required=False)
     contact_info = forms.CharField(label="Contact Info", widget=forms.TextInput, required=False)
+    university = forms.ModelChoiceField(queryset=University.objects.all().order_by('name'))
+
     def clean_password2(self):
         # Check that the two password entries match
         password1 = self.cleaned_data.get("password1")
@@ -82,6 +88,8 @@ class EngineerForm(forms.Form):
     alma_mater = forms.CharField(label="Alma Mater", widget=forms.TextInput, required=False)
     contact_info = forms.CharField(label="Contact Info", widget=forms.TextInput, required=False)
     about = forms.CharField(label="About", widget=forms.TextInput, required=False)
+    company = forms.ModelChoiceField(queryset=Company.objects.all().order_by('name'))
+
     def clean_password2(self):
         # Check that the two password entries match
         password1 = self.cleaned_data.get("password1")

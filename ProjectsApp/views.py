@@ -1,7 +1,4 @@
-"""ProjectsApp Views
 
-Created by Harris Christiansen on 10/02/16.
-"""
 from django.shortcuts import render
 
 from . import models
@@ -11,6 +8,7 @@ from AuthenticationApp.models import MyUser, Engineer
 from CommentsApp.models import Comment
 from GroupsApp.models import Group
 from CompaniesApp.models import Company
+from forms import UpdateForm
 #from BookmarksApp.models import Bookmark
 
 def getProjects(request):
@@ -29,33 +27,17 @@ def getProject(request):
 
         flag = False
         company_name = in_project.company
-    #    if Company.objects.get(name__exact=company_name) :
-     #   	company = Company.objects.get(name__exact=company_name)
-      #  else:
-       # 	company = null
-        if request.user.id == in_project.engineer_id or company.members.filter(email__exact=request.user.email).exists():
+
+        if request.user.id == in_project.engineer_id :
             flag = True
         group = False
         groups_list = Group.objects.all()
         for in_group in groups_list:
             if in_group.members.filter(email__exact=request.user.email).exists():
                 group = True
-       # try:
-            #Get the bookmark_object using the user_object and in_project object.
-        #    bookmark_object = Bookmark.objects.get(user=user_object, project=in_project)
-        #except Bookmark.DoesNotExist:
-         #   bookmark_object = None
 
-        #if bookmark_object != None:
-         #  user_has_bookmarked = True
-        #else:
-         #   user_has_bookmarked = False
-
-        #try:
-            #Get the engineer object for the user.
             engineer_object = models.Engineer.objects.get(user__exact=request.user)
 
-            #Get the company for the engineer.
             engineer_company = engineer_object.company
 
             project_company = in_project.company
@@ -64,20 +46,14 @@ def getProject(request):
                 user_can_delete = True
             else:
                 user_can_delete = False
-     #   except:
-      #      engineer_object = None 
-       #     user_can_delete = False
-
+  
         context = {
             'project' : in_project,
             'userIsMember': flag,
             'in_group' : group,
-            #'userHasBookmarked' : user_has_bookmarked,
             'userCanDelete' : user_can_delete,
         }
-        #Get the user_object by searching for the exact email.
-
-        #Render project page with updated button.
+        
         return render(request, 'project.html', context)
     return render(request, 'autherror.html')
 def getProjectFormSuccess(request):
@@ -87,13 +63,12 @@ def getProjectFormSuccess(request):
                 print(form.is_valid())
                 print(form)
                 if form.is_valid():
-                    print('heremm!!')
                     if models.Project.objects.filter(name__exact=form.cleaned_data['name']).exists():
                         return render(request, 'projectform.html', {'error' : 'Error: That Project name already exists!'})
                     engineer = Engineer.objects.get(user__exact=request.user)
                     #engineer = models.Engineer.objects.filter(user_id__exact=request.user.id)
                     company_id = engineer.company
-                    new_project = models.Project(name=form.cleaned_data['name'], description=form.cleaned_data['description'], language=form.cleaned_data['language'], experience=form.cleaned_data['experience'], speciality=form.cleaned_data['speciality'], engineer_id= request.user.id,company=company_id)
+                    new_project = models.Project(name=form.cleaned_data['name'], description=form.cleaned_data['description'], language=form.cleaned_data['language'], experience=form.cleaned_data['experience'], speciality=form.cleaned_data['speciality'], engineer_id= request.user.id)
                     new_project.save()
                     context = {
                         'name' : form.cleaned_data['name'],
@@ -185,3 +160,66 @@ def editProject(request):
         "button_value" : "Update"
     }
     return render(request, 'projectform.html', context)
+    
+def bookmark(request):
+    if request.user.is_authenticated():
+        in_name = request.GET.get('name', 'None')
+        in_group = models.Project.objects.get(name__exact=in_name)
+
+        request.user.bookmark.add(in_group)
+
+        is_bookmarked = request.user.bookmark.filter(name__exact=in_name)
+
+        context = {
+            'project': in_group,
+            'userIsMember': True,
+            'bookmarked': is_bookmarked,
+        }
+        return render(request, 'project.html', context)
+    # render error page if user is not logged in
+    return render(request, 'autherror.html')
+
+def unbookmark(request):
+    if request.user.is_authenticated():
+        in_name = request.GET.get('name', 'None')
+        in_group = models.Project.objects.get(name__exact=in_name)
+
+        request.user.bookmark.remove(in_group)
+
+        is_bookmarked = request.user.bookmark.filter(name__exact=in_name)
+
+        context = {
+            'project': in_group,
+            'userIsMember': True,
+            'bookmarked': is_bookmarked,
+        }
+        return render(request, 'project.html', context)
+    # render error page if user is not logged in
+    return render(request, 'autherror.html')
+    
+def bookmarks(request):
+    if request.user.is_authenticated():
+        projects_list = request.user.bookmark.all()
+        context = {
+            'projects': projects_list,
+            'is_bookmark': True
+        }
+        return render(request, 'projects.html', context)
+    # render error page if user is not logged in
+    return render(request, 'autherror.html')
+
+def update_profile(request):
+	form = UpdateForm(request.POST or None, instance=request.user)
+	if form.is_valid():
+		form.save()
+		messages.success(request, 'Success, your project was saved!')
+
+	context = {
+		"form": form,
+		"page_name" : "Update",
+		"button_value" : "Update",
+		"links" : ["logout"],
+	}
+	return render(request, 'auth_form.html', context)
+	
+	

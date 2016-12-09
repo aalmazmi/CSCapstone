@@ -7,25 +7,41 @@
 		<div class="jumbotron">
 			<h1>{{ group.name }}</h1>
 			<p>{{ group.description }}</p>
-			{% if userIsMember %}
+			<p2>At least {{group.experience_required}} years of experience needed<p2>
+			<h2>Our Projects</h2>
+			{% for item in in_projects %}
+					<tr>
+					<p></p>
+						<h3>{{ item.name }}</h3>
+						decription:
+						<td>{{item.description}}</td>
+						<p></p>
+					</tr>
+					{% endfor %}
+				<h2>Our members</h2>
+			{% for item in members %}
+					<tr>
+					<p></p>
+						<h5>{{ item.first_name }} {{item.last_name}}</h5>
+						Type:
+						<td>{{item.user_type}}</td>
+						<p></p>
+					</tr>
+					{% endfor %}
+			
+		{% if userIsMember %}
 			<a href="/group/unjoin?name={{ group.name }}" class="btn btn-default">Unjoin this Group</a>
-			<form method="post" action="/group/success" class="panel-body validate">
-				{% csrf_token %}
-				<label for="email">Email</label>
-				<h6 style="color:red">{{ error }}</h6>
-				<input type="text" name="email" id="email" placeholder="Email" class="form-control" data-bvalidator="required" data-bvalidator-msg="Name Required">
-				<br>
-				<label for="group">Group</label>
-				<input type="text" name="group" id="group" placeholder="Group" class="form-control" data-bvalidator="required" data-bvalidator-msg="Group Required">
-				<br>
-				<input type="submit" value="Submit" class="btn btn-primary">
-	      		{% csrf_token %}
+			<form method="post" action="/group/addmember" class="panel-body validate">
+				<div class="container" role="main">
+
+	</div>
+
      		
     		</form>
     		<a href="/group/delete?name={{ group.name }}" class="btn btn-default">Delete Group</a>
 
 			{% else %}
-			<a href="/group/join?name={{ group.name }}" class="btn btn-default">Join this Group</a>
+
 			{% endif %}
 		</div>
 	</div>
@@ -41,40 +57,122 @@
         </form>
     </div>
 </div>
-{% endif %}
- 						<tbody>
-                   {% for item in comments %}
+
+    <div class="container">
+		<div class="table-responsive">
+                <table class="table table-striped sortable">
+				<thead>
+					<tr>
+						<th>Add Users</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for item in users %}
+					<tr>
+						<td>{{ item.email }}                       <a href="/group/addMember?id={{ item.id }}&user={{ item.email }}&name={{group.name}}" class="btn btn-default">Add User</a>
+</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="container">
+		<div class="table-responsive">
+			<table class="table table-striped sortable">
+				<th>Comments</th>
+					{% for item in comments %}
                    <tr>
                     <td>{{ item.user }}</td>
                        <td>{{ item.comment }}</td>
                        <td>
                        {% if item.user == currentUser %}
-                       <a href="/group/deleteComment?id={{ item.id }}&user={{ item.user }}" class="btn btn-default">Delete</a>
+                       <a href="/group/deleteComment?id={{ item.id }}&user={{ item.user }}&name={{group.name}}" class="btn btn-default">Delete</a>
                        {% else %}
                        {% endif %}
                        </td>
                    </tr>
                    {% endfor %}
-                </tbody>
-
-	<div class="container">
-		<div class="table-responsive">
-			<table class="table table-striped sortable">
-				<thead>
-					<tr>
-						<th>Users</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for item in group.members.all %}
-					<tr>
-						<td>{{ item.get_full_name }}</td>
-					</tr>
-					{% endfor %}
 				</tbody>
 			</table>
 		
 		</div>
 	</div>
-
+	{%if not in_projects %}
+	<th>Recommended Projects</th>
+	    <div class="container">
+		<div class="table-responsive">
+                <table class="table table-striped sortable">
+				<thead>
+                <tr>
+                    <th>Project</th>
+                    <th>Description</th>
+                    <th>Language</th>
+                    <th>Years</th>
+                    <th>Speciality</th>
+                </tr>
+                </thead>
+					<tr>
+						<th>Select Project</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for project in recommended %}
+					<tr>
+						<td>{{ project.name }}         </td>
+						<td>{{ project.description }} </td>
+						<td>{{ project.language }} </td>
+						<td>{{ project.experience }} </td>
+						<td>{{project.speciality}} </td>
+						<td><a href="/group/selectProject?id={{ project.id }}&user={{ project.name }}&name={{group.name}}" class="btn btn-default">Select Project</a>
+</td>
+					</tr>
+					<
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+	{% endif %}
+	
+	{%if not in_projects %}
+	    <div class="container">
+		<div class="table-responsive">
+                <table class="table table-striped sortable">
+				<thead>
+                <tr>
+                    <th>Project</th>
+                    <th>Description</th>
+                    <th>Language</th>
+                    <th>Years</th>
+                    <th>Speciality</th>
+                </tr>
+                </thead>
+					<tr>
+						<th>Select Project</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for project in projects %}
+					<tr>
+						<td>{{ project.name }}         </td>
+						<td>{{ project.description }} </td>
+						<td>{{ project.language }} </td>
+						<td>{{ project.experience }} </td>
+						<td>{{project.speciality}} </td>
+						<td><a href="/group/selectProject?id={{ project.id }}&user={{ project.name }}&name={{group.name}}" class="btn btn-default">Select Project</a>
+</td>
+					</tr>
+					<
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+	{% endif %}
+	
+	
+{% endif %}
 {% endblock %}
+
+

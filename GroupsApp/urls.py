@@ -13,7 +13,8 @@ urlpatterns = [
     url(r'^group/delete$', views.deleteGroup, name='deleteProject'),
     url(r'^group/join$', views.joinGroup, name='GJoin'),
     url(r'^group/unjoin$', views.unjoinGroup, name='GUnjoin'),
+    url(r'^group/addMember$', views.addMembers, name='AddMember'),
     url(r'^group$', views.getGroup, name='Group'),
-    url(r'^group/addmember$', views.addMember, name='AddMember'),
+    url(r'^group/selectProject$', views.selectProject, name='SelectProjct'),
     url(r'^group/deleteComment$', views.deleteComment, name='DeleteComment'),
 ]
